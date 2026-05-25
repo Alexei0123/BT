@@ -1,29 +1,39 @@
 package com.anistreet.backend.model;
 
-import java.time.LocalDateTime;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String login;
-    private String passwordHash;
-    private String keyWord;
     private String name;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private String login;
 
-    //Getters
+    @Column(name = "password_hash")
+    private String passwordHash;
+
+    @Column(name = "key_word")
+    private String keyWord;
+
+    private String role = "USER";
+
+
     public Long getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getLogin() {
@@ -38,17 +48,17 @@ public class User {
         return keyWord;
     }
 
-    public String getName() {
-        return name;
+    public String getRole() {
+        return role;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
 
-    //Setters
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setLogin(String login) {
@@ -63,11 +73,7 @@ public class User {
         this.keyWord = keyWord;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setRole(String role) {
+        this.role = role;
     }
 }

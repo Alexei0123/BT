@@ -1,4 +1,5 @@
 const API_URL = "http://localhost:8080/api/auth";
+const BASE = "/BT";
 
 let cartState = [];
 let favoritesState = [];
@@ -22,7 +23,8 @@ function navigate(event, page) {
   if (event) {
     event.preventDefault();
   }
-  window.history.pushState(null, null, pageMap[page] || '/' + page);
+  window.history.pushState(null, null, BASE + pageMap[page]);
+  //window.history.pushState(null, null, pageMap[page] || '/' + page);
   renderPage();
 }
 

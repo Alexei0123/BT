@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/api/auth";
+const API_URL = "https://anistreet.onrender.com/api/auth";
 
 let cartState = [];
 let favoritesState = [];

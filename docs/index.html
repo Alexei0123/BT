@@ -343,5 +343,10 @@
 <script src="favorites.js"></script>
 <script src="admin.js"></script>
 
+<script>
+  sessionStorage.setItem("redirect", location.pathname);
+  location.replace("/");
+</script>
+  
 </body>
 </html>

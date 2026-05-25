@@ -1,191 +1,188 @@
-function register() {
-  const error = document.getElementById("registerError");
+const API_URL = "http://localhost:8080/api/auth";
 
-  const login = document.getElementById("regLogin").value;
-  const name = document.getElementById("regName").value;
-  const keyWord = document.getElementById("regKey").value;
-  const password = document.getElementById("regPassword").value;
+let cartState = [];
+let favoritesState = [];
 
-  error.innerText = "";
+const pageMap = {
+  'home': '/',
+  'catalog': '/catalog',
+  'auth': '/auth',
+  'profile': '/profile',
+  'admin': '/admin',
+  'product': '/product',
+  'cart': '/cart',
+  'favorites': '/favorites',
+  'notfound': '/404',
+  'servererror': '/500'
+};
 
-  fetch("http://localhost:8080/api/auth/register", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      login: login,
-      name: name,
-      keyWord: keyWord,
-      passwordHash: password
-    })
-  })
-  .then(r => r.text())
-  .then(res => {
+let catalogInitialized = false;
 
-    if (res === "REGISTERED") {
-      localStorage.setItem("user", login);
-      goTo("profile");
-      renderProfile();
-    } else if (res === "LOGIN_TAKEN") {
-      error.innerText = "Логин уже занят";
-    } else if (res === "LOGIN_TOO_SHORT") {
-      error.innerText = "Логин слишком короткий";
-    } else if (res === "KEYWORD_REQUIRED") {
-      error.innerText = "Введите ключевое слово";
-    } else {
-      error.innerText = res;
-    }
-
-    document.getElementById("regLogin").value = "";
-    document.getElementById("regName").value = "";
-    document.getElementById("regKey").value = "";
-    document.getElementById("regPassword").value = "";
-  });
-}
-
-function login() {
-  const login = document.getElementById("loginInput").value;
-  const password = document.getElementById("loginPassword").value;
-  const error = document.getElementById("loginError");
-
-  error.innerText = ""; //Очистить
-
-  fetch("http://localhost:8080/api/auth/login", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      login: login,
-      passwordHash: password
-    })
-  })
-  .then(r => r.text())
-  .then(res => {
-    if (res === "OK") {
-      localStorage.setItem("user", login);
-      goTo("profile");
-      renderProfile();
-    } else {
-      error.innerText = "Неверный логин или пароль";
-    }
-
-    document.getElementById("loginInput").value = "";
-    document.getElementById("loginPassword").value = "";
-  });
-}
-
-function showForgot() {
-  document.getElementById("loginForm").classList.add("hidden");
-  document.getElementById("forgotForm").classList.remove("hidden");
-
-  
-  document.getElementById("registerForm").classList.add("hidden");
-}
-
-function forgot() {
-  const error = document.getElementById("forgotError");
-
-  const login = document.getElementById("forgotLogin").value;
-  const keyWord = document.getElementById("forgotKey").value;
-  const password = document.getElementById("forgotPassword").value;
-
-  error.innerText = "";
-
-  fetch("http://localhost:8080/api/auth/forgot", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      login: login,
-      keyWord: keyWord,
-      passwordHash: password
-    })
-  })
-  .then(r => r.text())
-  .then(res => {
-
-    if (res === "PASSWORD_CHANGED") {
-      error.style.color = "green";
-      error.innerText = "Пароль изменён!";
-    } else if (res === "NOT_FOUND") {
-      error.innerText = "Пользователь не найден";
-    } else if (res === "WRONG_KEYWORD") {
-      error.innerText = "Неверное ключевое слово";
-    }
-
-    document.getElementById("forgotLogin").value = "";
-    document.getElementById("forgotKey").value = "";
-    document.getElementById("forgotPassword").value = "";
-  });
-}
-
-function backToLogin() {
-  document.getElementById("forgotForm").classList.add("hidden");
-  document.getElementById("loginForm").classList.remove("hidden");
+function navigate(event, page) {
+  if (event) {
+    event.preventDefault();
+  }
+  window.history.pushState(null, null, pageMap[page] || '/' + page);
+  renderPage();
 }
 
 function goTo(page) {
-  window.location.hash = page;
-}
-
-function switchTab(tab, event) {
-
-  document.getElementById("loginForm").classList.toggle("hidden", tab !== "login");
-  document.getElementById("registerForm").classList.toggle("hidden", tab !== "register");
-
-  document.getElementById("forgotForm").classList.add("hidden");
-
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-  event.target.classList.add("active");
+  window.history.pushState(null, null, pageMap[page] || '/' + page);
+  renderPage();
 }
 
 function renderPage() {
   const pages = document.querySelectorAll(".page");
+  pages.forEach(p => p.classList.remove("active"));
 
-  pages.forEach(p => {
-    p.classList.remove("active");
-  });
+  const pathname = window.location.pathname;
 
-  let hash = window.location.hash.replace("#", "");
+  const pageMap = {
+  "/": "home",
+  "/catalog": "catalog",
+  "/auth": "auth",
+  "/profile": "profile",
+  "/admin": "admin",
+  "/product": "product",
+  "/cart": "cart",
+  "/favorites": "favorites",
+  "/404": "notfound",
+  "/500": "servererror"
+  };
 
-  if (!hash) hash = "home";
+  const pageId = pageMap[pathname] || "notfound";
 
-  const activePage = document.getElementById(hash);
+  console.log("PATH:", pathname);
+  console.log("PAGE:", pageId);
+
+  //Проверка авторизации
+  const user = localStorage.getItem("user");
+  const role = localStorage.getItem("role");
+
+  //Если не авторизован то нельзя в профиль
+  if (pageId === "profile" && !user) {
+    navigate(null, "auth");
+    return;
+  }
+
+  //Если не админ то нельзя в админку
+  if (pageId === "admin") {
+    if (!user || role !== "ADMIN") {
+      navigate(null, "home");
+      return;
+    }
+  }
+
+  const activePage = document.getElementById(pageId);
 
   if (activePage) {
     activePage.classList.add("active");
   }
 
-  if (hash === "profile") {
+  if (pageId === "profile") {
     renderProfile();
   }
 
-  if (hash === "auth") {
+  if (pageId === "catalog") {
+    refreshPage();
+    if (!catalogInitialized) {
+    setupCatalogSearch();
+    setupCategoryFilter();
+    setupSorting();
+    catalogInitialized = true;
+    }
+  }
 
+  if (pageId === "product") {
+    activePage.classList.add("active");
+    refreshPage();
+  }
+
+  if (pageId === "cart") {
+    if (!user) {
+      navigate(null, "auth");
+      return;
+    }
+    refreshPage();
+  }
+
+  if (pageId === "favorites") {
+    if (!user) {
+      navigate(null, "auth");
+      return;
+    }
+    refreshPage();
+  }
+
+  if(pageId === "home"){
+    refreshPage();
+  }
+
+  if (pageId === "auth" ) {
+    if (user) { 
+      navigate(null, "profile");
+      return;
+    }
+    
     document.getElementById("forgotForm").classList.add("hidden");
     document.getElementById("loginForm").classList.remove("hidden");
-
+    document.getElementById("registerForm").classList.add("hidden");
   }
-  console.log("Current page:", hash);
+
+  console.log("ACTIVE PAGE ELEMENT:", activePage);
+  console.log("ACTIVE CLASS:", activePage?.classList);
+
+  console.log("Current page:", pageId);
 }
 
-function renderProfile() {
+function updateAuthButton() {
+  const authBtn = document.getElementById("authBtn");
   const user = localStorage.getItem("user");
 
   if (user) {
-    document.getElementById("welcomeText").innerText =
-      "Добро пожаловать, " + user;
+    authBtn.innerText = "Профиль";
+    authBtn.style.background = "#6366f1";	
+  } else {
+    authBtn.innerText = "Войти";
+    authBtn.style.background = "#008080";
   }
 }
 
-function logout() {
-  localStorage.removeItem("user");
-  goTo("home");
+function handleAuthClick(event) {
+  event.preventDefault();
+
+  const user = localStorage.getItem("user");
+
+  if (user) {
+    navigate(event, "profile");
+  } else {
+    navigate(event, "auth");
+  }
 }
 
-window.addEventListener("hashchange", renderPage);
-window.addEventListener("load", () => {
-  console.log("JS loaded OK");
-  renderPage();
+async function refreshPage() {
+  await loadCartState();
+  await loadFavoritesState();
 
-  document.getElementById("forgotForm").classList.add("hidden");
-  document.getElementById("loginForm").classList.remove("hidden");
-  document.getElementById("registerForm").classList.add("hidden");
-});
+  const page = window.location.pathname;
+
+  if (page.includes("cart")) {
+    await renderCart();
+  } else if (page.includes("favorites")) {
+    await renderFavorites();
+  } else if (page.includes("product")) {
+    renderProduct();
+  } else if (page === "/") {
+    await renderNewProducts();
+  } else {
+    renderCatalog();
+  }
+}
+
+async function init() {
+  await refreshPage();
+  renderPage();
+  updateAuthButton();
+}
+window.addEventListener("load", init);
+window.addEventListener("popstate", renderPage);

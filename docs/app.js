@@ -1,4 +1,4 @@
-const API_URL = "https://anistreet.onrender.com/api/auth";
+const API_URL = "http://localhost:8080/api/auth";
 
 let cartState = [];
 let favoritesState = [];
@@ -180,6 +180,12 @@ async function refreshPage() {
 }
 
 async function init() {
+  const redirect = sessionStorage.getItem("redirect");
+  if (redirect) {
+    sessionStorage.removeItem("redirect");
+    window.history.replaceState(null, null, redirect);
+  }
+  
   await refreshPage();
   renderPage();
   updateAuthButton();

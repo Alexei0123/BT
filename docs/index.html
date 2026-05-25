@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AniStreet</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
@@ -10,117 +10,338 @@
 <body>
 
 <header>
-  <div class="logo">AniStreet</div>
-
+  <nav> <a class="logo" href="/" onclick="navigate(event, 'home')" >AniStreet  </a> </nav>
+  
   <nav>
-    <a href="#home">Главная</a>
-    <a href="#catalog">Каталог</a>
-    <a href="#auth" class="btn">Войти</a>
+    <a href="/" onclick="navigate(event, 'home')">Главная</a>
+    <a href="/catalog" onclick="navigate(event, 'catalog')">Каталог</a>
+    <a href="/favorites" class="favorites-link" onclick="navigate(event, 'favorites')" > ❤ </a>
+    <a href="/cart" onclick="navigate(event, 'cart')"> Корзина </a>
+    <a href="/auth" id="authBtn" class="btn" onclick="handleAuthClick(event)">Войти</a>
   </nav>
 </header>
 
 <main>
 
-  <!-- Home -->
   <section id="home" class="page active">
-    <div class="hero">
-      <h1>Добро пожаловать в AniStreet</h1>
-      <p>Фигурки, одежда, постеры и аниме товары</p>
-      <button class="btn-primary" onclick="goTo('auth')">
-        Перейти к входу
-      </button>
-    </div>
+  <div class="hero">
+    <h1>Добро пожаловать в AniStreet</h1>
+    <p> Фигурки, одежда, постеры и аниме товары </p>
+    <button class="btn-primary" onclick="goTo('catalog')">
+      Перейти в каталог
+    </button>
+  </div>
+
+  <section class="new-products">
+    <h2>Новинки</h2>
+    <div id="newProductsGrid" class="grid" ></div>
   </section>
 
-  <!-- Catalog -->
-  <section id="catalog" class="page">
-    <h2>Каталог</h2>
-
-    <div class="grid">
-      <div class="card">Фигурка Naruto</div>
-      <div class="card">Футболка One Piece</div>
-      <div class="card">Постер Attack on Titan</div>
+  <footer class="footer">
+    <div class="footer-content">
+      <div>
+        <h3>AniStreet</h3>
+        <p>
+          Магазин аниме товаров
+        </p>
+      </div>
+      <div>
+        <h4>Контакты</h4>
+        <p>Email: anistreet@gmail.com</p>
+        <p>Телефон: +375 29 276-48-90</p>
+      </div>
     </div>
-  </section>
+  </footer>
+</section>
 
-  <!-- Auth -->
+<section id="catalog" class="page">
+
+  <h2>Каталог товаров</h2>
+
+  <div class="catalog-filters">
+
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Поиск товаров..."
+      class="search-box"
+    >
+
+    <select id="categoryFilter" class="category-filter">
+      <option value="">Все категории</option>
+      <option value="figures">Фигурки</option>
+      <option value="clothes">Одежда</option>
+      <option value="posters">Постеры</option>
+      <option value="manga">Манга</option>
+    </select>
+
+    <select id="sortSelect" class="category-filter">
+      <option value="">Без сортировки</option>
+      <option value="priceAsc">Цена ↑</option>
+      <option value="priceDesc">Цена ↓</option>
+      <option value="nameAsc">Название A-Z</option>
+    </select>
+
+  </div>
+
+  <div id="productsGrid" class="grid">
+    <div class="loading">Загрузка товаров...</div>
+  </div>
+
+</section>
+
   <section id="auth" class="page">
-
     <div class="auth-box">
-
-      <!-- tabs -->
       <div class="tabs">
         <button class="tab active" onclick="switchTab('login', event)">Вход</button>
         <button class="tab" onclick="switchTab('register', event)">Регистрация</button>
       </div>
+      <div id="loginForm">
+        <div id="loginError" class="error"></div>
+        <input id="loginInput" placeholder="Логин" />
+        <input id="loginPassword" type="password" placeholder="Пароль" />
+        <button onclick="login()" class="btn-primary">Войти</button>
+        <p onclick="showForgot()" style="cursor:pointer; color:#6366f1;">
+          Забыли пароль?
+        </p>
+      </div>
 
-      <!-- Login -->
-    <div id="loginForm">
+      <div id="forgotForm" class="hidden">
 
-      <div id="loginError" class="error"></div>
+        <div id="forgotError" class="error"></div>
 
-      <input id="loginInput" placeholder="Логин" />
-      <input id="loginPassword" type="password" placeholder="Пароль" />
+        <input id="forgotLogin" placeholder="Логин" />
+        <input id="forgotKey" placeholder="Ключевое слово" oninput="toggleForgotQuestionField()" />
+        <input id="forgotQuestion" class="hidden" placeholder="Секретный вопрос" />
+        <p class="small-note">Подсказка: укажите девичью фамилию матери.</p>
+        <div>
+          <input id="forgotPassword" type="password" placeholder="Новый пароль" oninput="updateForgotPasswordStrength()" />
+          <div class="password-strength">
+            <div id="forgotStrengthBar" class="strength-bar"></div>
+            <span id="forgotStrengthText" class="strength-text"></span>
+          </div>
+        </div>
+        <input id="forgotConfirmPassword" type="password" placeholder="Повторите новый пароль" />
 
-      <button onclick="login()" class="btn-primary">Войти</button>
+        <button onclick="forgot()" class="btn-primary">
+          Сменить пароль
+        </button>
 
-      <p onclick="showForgot()" style="cursor:pointer; color:#6366f1;">
-        Забыли пароль?
-      </p>
+        <button onclick="backToLogin()" class="btn-primary">
+          Назад
+        </button>
 
-    </div>
+      </div>
 
-      <!-- Forgot -->
-    <div id="forgotForm" class="hidden">
+      <div id="registerForm" class="hidden">
 
-      <div id="forgotError" class="error"></div>
+        <div id="registerError" class="error"></div>
 
-      <input id="forgotLogin" placeholder="Логин" />
-      <input id="forgotKey" placeholder="Ключевое слово" />
-      <input id="forgotPassword" type="password" placeholder="Новый пароль" />
+        <input id="regLogin" placeholder="Логин" />
+        <input id="regName" placeholder="Ник" />
+        <input id="regKey" placeholder="Ключевое слово" oninput="toggleQuestionField()" />
+        <input id="regQuestion" class="hidden" placeholder="Секретный вопрос" />
+        <p class="small-note">Подсказка: укажите девичью фамилию матери.</p>
+        <div>
+          <input id="regPassword" type="password" placeholder="Пароль" oninput="updatePasswordStrength()" />
+          <div class="password-strength">
+            <div id="strengthBar" class="strength-bar"></div>
+            <span id="strengthText" class="strength-text"></span>
+          </div>
+        </div>
+        <input id="regPasswordConfirm" type="password" placeholder="Повторите пароль" />
 
-      <button onclick="forgot()" class="btn-primary">
-        Сменить пароль
-      </button>
+        <button onclick="register()" class="btn-primary">
+          Создать аккаунт
+        </button>
 
-      <button onclick="backToLogin()" class="btn-primary">
-        Назад
-      </button>
-
-    </div>
-
-      <!-- Register -->
-  <div id="registerForm">
-
-    <div id="registerError" class="error"></div>
-
-    <input id="regLogin" placeholder="Логин" />
-    <input id="regName" placeholder="Ник" />
-    <input id="regKey" placeholder="Ключевое слово" />
-    <input id="regPassword" type="password" placeholder="Пароль" />
-
-    <button onclick="register()" class="btn-primary">
-      Создать аккаунт
-    </button>
-
-  </div>
+      </div>
 
     </div>
 
   </section>
   
   <section id="profile" class="page">
-  <div class="auth-box">
-    <h2>Личный кабинет</h2>
-    <p id="welcomeText">Добро пожаловать</p>
-    <button onclick="logout()" class="btn-primary">Выйти</button>
-  </div>
+    <div class="profile-container">
+      <div class="profile-header">
+        <h1>Личный кабинет</h1>
+      </div>
+      
+      <div class="profile-card">
+        <h2>Информация профиля</h2>
+        <div class="profile-info">
+          <div class="info-field">
+            <label>Логин:</label>
+            <p id="profileLogin">-</p>
+          </div>
+          <div class="info-field">
+            <label>Имя:</label>
+            <p id="profileName">-</p>
+          </div>
+          <div class="info-field">
+            <label>Ключевое слово:</label>
+            <p id="profileKeyword">-</p>
+          </div>
+        </div>
+
+      <div id="adminPanelButton" class="hidden">
+        <h2>Администрирование</h2>
+        <button onclick="navigate(event, 'admin')" class="btn-primary"> Админ панель </button>
+      </div>
+
+      <div class="profile-actions">
+        <button onclick="logout()" class="btn-primary logout-btn">Выйти</button>
+      </div>
+    </div>
   </section>
 
+<section id="admin" class="page">
+  <div class="profile-container">
+    <div class="profile-header">
+      <h1>Админ панель</h1>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="showAdminSection('addProductSection', this)"> Добавление товара </button>
+      <button class="admin-tab" onclick="showAdminSection('editProductSection', this)" > Редактирование товаров </button>
+      <button class="admin-tab" onclick="showAdminSection('usersSection', this)" > Пользователи </button>
+    </div>
+
+    <div   class="profile-card admin-section" id="addProductSection">
+      <h2>Добавление товара</h2>
+      <div class="admin-form">
+        
+        <input id="productName" placeholder="Название товара">
+        <textarea id="productDescription" placeholder="Описание товара"></textarea>
+        <!-- <input id="productPrice" type="number" placeholder="Цена"> -->
+        <input id="productPrice" type="number" placeholder="Цена" min="0" step="1" onkeydown="return event.key !== '-' && event.key !== '+' && event.key !== 'Minus'">
+        <select id="productCategory">
+          <option value="figures">Фигурки</option>
+          <option value="clothes">Одежда</option>
+          <option value="posters">Постеры</option>
+          <option value="manga">Манга</option>
+        </select>
+        <!-- <input type="text" id="productImage" placeholder="Введите имя файла"> -->
+        <input type="file" id="productImage" accept="image/*">
+
+        <button onclick="addProduct()" class="btn-primary">
+          Добавить товар
+        </button>
+
+        <p id="adminMessage"></p>
+      </div>
+    </div>
+
+    <div class="profile-card admin-section hidden" id="editProductSection" >
+      <h2>Редактирование товаров</h2>
+      <div id="adminProductsList"></div>
+    </div>
+
+    <div id="editModal" class="modal hidden">
+
+  <div class="modal-content">
+    <h2>Редактирование товара</h2>
+
+    <input id="modalProductName" placeholder="Название">
+    <textarea id="modalProductDescription" placeholder="Описание" ></textarea>
+    <input id="modalProductPrice" type="number" placeholder="Цена" >
+    <select id="modalProductCategory">
+      <option value="figures">Фигурки</option>
+      <option value="clothes">Одежда</option>
+      <option value="posters">Постеры</option>
+      <option value="manga">Манга</option>
+    </select>
+    <input type="file" id="modalProductImage" accept="image/*" >
+
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="saveProductChanges()" > Сохранить </button>
+      <button class="btn-primary logout-btn" onclick="closeEditModal()" > Отмена </button>
+    </div>
+  </div>
+</div>
+
+
+    <div class="profile-card admin-section hidden" id="usersSection" >
+      <h2>Управление пользователями</h2>
+      <div id="usersList"></div>
+    </div>
+
+  </div>
+
+</div>
+</section>
+
+<section id="product" class="page">
+  <div class="product-page">
+    <div class="product-image-wrapper">
+      <button id="productFavoriteBtn" class="favorite-btn"> ♡ </button>
+      <div class="product-image-large">
+        <img id="productPageImage" src="" alt="Product image" />
+      </div>
+    </div>
+
+    <h1 id="productPageName"></h1>
+    <p id="productPagePrice"></p>
+    <p id="productPageDescription"></p>
+    <div id="productCartControls"></div>
+  </div>
+</section>
+
+<section id="cart" class="page">
+  <div class="profile-container">
+    <h1>Корзина</h1>
+    <div id="cartItems"></div>
+    <h2 id="cartTotal"></h2>
+  </div>
+</section>
+
+<section id="favorites" class="page">
+  <div class="profile-container">
+    <h1>Избранное</h1>
+    <div id="favoritesItems"></div>
+  </div>
+</section>
+
+<section id="notfound" class="page">
+  <div class="hero">
+    <h1>404</h1>
+    <p>Страница не найдена</p>
+    <button class="btn-primary" onclick="goTo('home')" > На главную  </button>
+  </div>
+</section>
+
+<section id="servererror" class="page">
+  <div class="hero">
+    <h1>500</h1>
+    <p>Ошибка сервера</p>
+    <button class="btn-primary" onclick="goTo('home')" > На главную  </button>
+  </div>
+</section>
+
+  <div id="confirmModal" class="modal hidden">
+    <div class="modal-content confirm-modal">
+      <div class="confirm-icon"> ⚠️ </div>
+      <h2 id="confirmTitle"> Подтверждение </h2>
+      <p id="confirmText"> Вы уверены, что хотите удалить товар? </p>
+      <div class="modal-actions">
+        <button id="confirmYes" class="btn-danger" > Удалить </button>
+        <button id="confirmNo" class="btn-secondary" > Отмена </button>
+      </div>
+    </div>
+  </div>
 
 </main>
 
+<div id="toast"></div>
+
 <script src="app.js"></script>
+<script src="auth.js"></script>
+<script src="catalog.js"></script>
+<script src="product.js"></script>
+<script src="profile.js"></script>
+<script src="cart.js"></script>
+<script src="favorites.js"></script>
+<script src="admin.js"></script>
 
 </body>
 </html>

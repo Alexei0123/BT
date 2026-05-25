@@ -23,13 +23,14 @@ function navigate(event, page) {
   if (event) {
     event.preventDefault();
   }
-  window.history.pushState(null, null, BASE + pageMap[page]);
+  window.history.pushState(null,null,BASE + (pageMap[page] || '/' + page));
   //window.history.pushState(null, null, pageMap[page] || '/' + page);
   renderPage();
 }
 
 function goTo(page) {
-  window.history.pushState(null, null, pageMap[page] || '/' + page);
+  window.history.pushState(null,null,BASE + (pageMap[page] || '/' + page));
+  // window.history.pushState(null, null, pageMap[page] || '/' + page);
   renderPage();
 }
 
@@ -37,7 +38,8 @@ function renderPage() {
   const pages = document.querySelectorAll(".page");
   pages.forEach(p => p.classList.remove("active"));
 
-  const pathname = window.location.pathname;
+  const pathname = window.location.pathname.replace(BASE, "") || "/";
+  // const pathname = window.location.pathname;
 
   const pageMap = {
   "/": "home",

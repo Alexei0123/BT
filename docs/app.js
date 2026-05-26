@@ -35,7 +35,7 @@ function renderPage() {
   const pages = document.querySelectorAll(".page");
   pages.forEach(p => p.classList.remove("active"));
 
-  const pathname = window.location.pathname.replace("/BT", "") || "/";
+  const pathname = window.location.hash.replace("#", "") || "/";
 
   const pageMap = {
   "/": "home",

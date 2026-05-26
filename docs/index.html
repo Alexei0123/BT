@@ -27,9 +27,7 @@
   <div class="hero">
     <h1>Добро пожаловать в AniStreet</h1>
     <p> Фигурки, одежда, постеры и аниме товары </p>
-    <button class="btn-primary" onclick="goTo('catalog')">
-      Перейти в каталог
-    </button>
+    <button class="btn-primary" onclick="navigate(event, 'home')"> Перейти в каталог </button>
   </div>
 
   <section class="new-products">
@@ -306,7 +304,7 @@
   <div class="hero">
     <h1>404</h1>
     <p>Страница не найдена</p>
-    <button class="btn-primary" onclick="goTo('home')" > На главную  </button>
+    <button class="btn-primary" onclick="navigate(event, 'home')" > На главную  </button>
   </div>
 </section>
 
@@ -314,7 +312,7 @@
   <div class="hero">
     <h1>500</h1>
     <p>Ошибка сервера</p>
-    <button class="btn-primary" onclick="goTo('home')" > На главную  </button>
+    <button class="btn-primary" onclick="navigate(event, 'home')" > На главную  </button>
   </div>
 </section>
 

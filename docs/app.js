@@ -1,5 +1,7 @@
 const API_URL = "http://localhost:8080/api/auth";
 
+const BASE = "/BT";
+
 let cartState = [];
 let favoritesState = [];
 
@@ -22,12 +24,14 @@ function navigate(event, page) {
   if (event) {
     event.preventDefault();
   }
-  window.history.pushState(null, null, pageMap[page] || '/' + page);
+  window.history.pushState(null,null,BASE + (pageMap[page] || "/" + page));
+
   renderPage();
 }
 
-function goTo(page) {;
-  window.history.pushState(null, null, pageMap[page] || '/' + page);
+function goTo(page) {
+  window.history.pushState(null,null,BASE + (pageMap[page] || "/" + page));
+
   renderPage();
 }
 
@@ -35,7 +39,7 @@ function renderPage() {
   const pages = document.querySelectorAll(".page");
   pages.forEach(p => p.classList.remove("active"));
 
-  const pathname = window.location.pathname;
+  const pathname = window.location.pathname.replace("/BT", "") || "/";
 
   const pageMap = {
   "/": "home",

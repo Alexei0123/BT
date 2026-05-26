@@ -35,7 +35,8 @@ function renderPage() {
   const pages = document.querySelectorAll(".page");
   pages.forEach(p => p.classList.remove("active"));
 
-  const pathname = window.location.hash.replace("#", "") || "/";
+  const hash = window.location.hash.replace("#", "");
+  const pathname = hash.split("?")[0] || "/";
 
   const pageMap = {
   "/": "home",
@@ -164,7 +165,7 @@ async function refreshPage() {
   await loadCartState();
   await loadFavoritesState();
 
-  const page = window.location.hash.replace("#", "") || "/";
+  const page = window.location.hash.replace("#", "").split("?")[0] || "/";
 
   if (page.includes("cart")) {
     await renderCart();

@@ -7,7 +7,7 @@ async function loadProducts() {
     }
   } catch (error) {
     console.error("Ошибка при загрузке товаров:", error);
-    window.history.pushState(null,null,"/500");
+    window.location.hash = "/500";
     renderPage();
   }
   return [];
@@ -22,7 +22,7 @@ async function loadProductById(id) {
     }
   } catch (error) {
     console.error("Ошибка при загрузке товара:", error);
-    window.history.pushState(null,null,"/500");
+    window.location.hash = "/500";
     renderPage();
   }
   return null;
@@ -37,7 +37,7 @@ async function searchProducts(query) {
     }
   } catch (error) {
     console.error("Ошибка при поиске товаров:", error);
-    window.history.pushState(null,null,"/500");
+    window.location.hash = "/500";
     renderPage();
   }
   return [];
@@ -52,19 +52,20 @@ async function getProductsByCategory(category) {
     }
   } catch (error) {
     console.error("Ошибка при загрузке товаров по категории:", error);
-    window.history.pushState(null,null,"/500");
+    window.location.hash = "/500";
     renderPage();
   }
   return [];
 }
 
 async function renderProduct() {
-  const params = new URLSearchParams(window.location.search);
+  const hash = window.location.hash.split("?")[1] || "";
+  const params = new URLSearchParams(hash);
   const id = params.get("id");
   const product = await loadProductById(id);
 
   if (!product) {
-    window.history.pushState(null,null,"/404");
+    window.location.hash = "/404";
     renderPage();
     return;
   }
@@ -83,8 +84,8 @@ async function renderProduct() {
 }
 
 function openProduct(id) {
-  window.history.pushState(null, null, "/product?id=" + id);
-  setTimeout(renderPage, 0);
+  window.location.hash = "/product?id=" + id;
+  renderPage();
 }
 
 async function loadNewProducts() {

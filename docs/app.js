@@ -26,11 +26,6 @@ function navigate(event, page) {
   renderPage();
 }
 
-function goTo(page) {
-  const pathname = window.location.hash.replace("#", "") || "/";
-  renderPage();
-}
-
 function renderPage() {
   const pages = document.querySelectorAll(".page");
   pages.forEach(p => p.classList.remove("active"));

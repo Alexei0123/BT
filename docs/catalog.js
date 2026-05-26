@@ -34,8 +34,9 @@ async function renderCatalog(products = null) {
       <div class="product-image">
 
         <img src="${
-          product.imageUrl ||
-          'https://via.placeholder.com/200'
+          product.imageUrl
+          ? 'http://localhost:8080' + product.imageUrl
+          : 'https://via.placeholder.com/200'
         }">
 
       </div>

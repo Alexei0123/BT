@@ -1,7 +1,5 @@
 const API_URL = "http://localhost:8080/api/auth";
 
-const BASE = "/BT";
-
 let cartState = [];
 let favoritesState = [];
 
@@ -24,14 +22,12 @@ function navigate(event, page) {
   if (event) {
     event.preventDefault();
   }
-  window.history.pushState(null,null,BASE + (pageMap[page] || "/" + page));
-
+  window.location.hash = pageMap[page] || "/" + page;
   renderPage();
 }
 
 function goTo(page) {
-  window.history.pushState(null,null,BASE + (pageMap[page] || "/" + page));
-
+  const pathname = window.location.hash.replace("#", "") || "/";
   renderPage();
 }
 
@@ -168,7 +164,7 @@ async function refreshPage() {
   await loadCartState();
   await loadFavoritesState();
 
-  const page = window.location.pathname;
+  const page = window.location.hash.replace("#", "") || "/";
 
   if (page.includes("cart")) {
     await renderCart();
@@ -189,4 +185,4 @@ async function init() {
   updateAuthButton();
 }
 window.addEventListener("load", init);
-window.addEventListener("popstate", renderPage);
+window.addEventListener("hashchange", renderPage);
